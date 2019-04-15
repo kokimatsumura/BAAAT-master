@@ -8,8 +8,8 @@ import functools
 import itertools
 import operator
 import csv
-#import cplex
-#from cplex.exceptions import CplexError
+import cplex
+from cplex.exceptions import CplexError
 
 # get all the data to add as variables and objectives in cplex.
 def get_data(n):
@@ -35,6 +35,7 @@ def get_data(n):
 # n = 3
 # >>> [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1],
 #     [1, 0, 1], [0, 1, 1], [1, 1, 1]
+
 def make_binary_list(n):
 
     number = list(itertools.product(range(0,2), repeat=n))
@@ -47,6 +48,7 @@ def make_binary_list(n):
 # my_obj = [20, 50, 10, 70, 60, 100, 110]
 # coalition = [0, 1, 1], my_prob = [0.9, 0.5, 0.3]
 # >>> ve = 100 * 0.5 * 0.3
+
 def calc_coalition_ve(k_prob, my_obj, coalition_list, binary_list):
 
     number = binary_list.index(coalition_list)
@@ -104,7 +106,7 @@ def make_k_expected_value(n, k_para, my_prob,
 
     return ve_sum
 
-#make the objective function of PCSG.
+# make the objective function of PCSG.
 def make_k_value_list(n, k_para, binary_list,
                       my_prob, my_obj):
     k_values = []

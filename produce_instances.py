@@ -39,7 +39,7 @@ def produce_normal(n, ins_num, prob_list, coalition_size):
 
 def produce_modified_uniform(n, ins_num, prob_list, coalition_size):
     
-    f=open('n=%d_modified_uniform.csv' %n,'w')
+    f=open('n=%d_modified-uniform.csv' %n,'w')
     for i in range(ins_num):
         for i in range(pow(2,n)-1):
             number = random.randint(1, 100)
@@ -57,7 +57,7 @@ def produce_modified_uniform(n, ins_num, prob_list, coalition_size):
 
 def produce_modified_normal(n, ins_num, prob_list, coalition_size):
     
-    f=open('n=%d_modified_normal.csv' %n,'w')
+    f=open('n=%d_modified-normal.csv' %n,'w')
     for i in range(ins_num):
         for i in range(pow(2,n)-1):
             number = random.randint(1, 100)
