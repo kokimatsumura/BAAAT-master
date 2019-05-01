@@ -8,8 +8,16 @@ import functools
 import itertools
 import operator
 import csv
+import openpyxl as excel
 import cplex
 from cplex.exceptions import CplexError
+
+def make_record_file(result_file_name):
+
+    wb = excel.Workbook()
+    wb.save(result_file_name)
+
+    return result_file_name
 
 # get all the data to add as variables and objectives in cplex.
 def get_data(n):
@@ -198,11 +206,7 @@ def solve_pcsg(n, k_para, my_prob, my_obj):
                                    rhs=my_rhs, names=my_rownames)
     problem.solve()
     optimal_value = problem.solution.get_objective_value()
-    print()
     print("Solution value  = ", optimal_value)
-    x = problem.solution.get_values()
-    for i in range((pow(2,n)-1)):
-        print("Column %d:  Value = %10f" % (i, x[i]))
 
     return optimal_value, k_values
 
@@ -225,13 +229,14 @@ def solve_pcsg_by_baaat(n, k_para, p_tilde, my_prob, my_obj):
                             my_rhs, my_sense = get_data(m)
 
     indi_values = sum_individual_values(reduced_prob, my_obj)
+    binary_list = make_binary_list(m)
 
     if reduced_prob:
-        binary_list = make_binary_list(m)
         k_values = make_k_value_list(m, k_para, binary_list,
                                     remaining_prob, reduced_obj)
     else:
-        k_values = []
+        k_values = make_k_value_list(m, k_para, binary_list,
+                                    remaining_prob, my_obj)
 
     # solve the problem
     problem = cplex.Cplex()
@@ -243,10 +248,6 @@ def solve_pcsg_by_baaat(n, k_para, p_tilde, my_prob, my_obj):
                                    rhs=my_rhs, names=my_rownames)
     problem.solve()
     optimal_value = problem.solution.get_objective_value() + indi_values
-    print()
     print("Solution value  = ", optimal_value)
-    x = problem.solution.get_values()
-    for i in range((pow(2,len(remaining_prob))-1)):
-        print("Column %d:  Value = %10f" % (i, x[i]))
 
     return optimal_value, reduced_list

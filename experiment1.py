@@ -13,7 +13,7 @@ import cplex
 from cplex.exceptions import CplexError
 import function as fc
 
-def experiment(file_path, n, k_para, p_tilde):
+def experiment1(file_path, n, k_para, p_tilde):
     time_baaat = []
     value_baaat = []
     time_pcsg = []
@@ -29,9 +29,8 @@ def experiment(file_path, n, k_para, p_tilde):
             #Start solving the BAAAT problems.
             start_baaat = timeit.default_timer()
 
-            optimal_value_baaat, reduced_list\ 
-                    = fc.solve_pcsg_by_baaat(n, k_para, p_tilde,
-                                                my_prob, my_obj)
+            optimal_value_baaat, reduced_list = fc.solve_pcsg_by_baaat(n, k_para, p_tilde,
+                                                                       my_prob, my_obj)
 
             stop_baaat = timeit.default_timer()
             t_baaat = stop_baaat - start_baaat
@@ -40,8 +39,8 @@ def experiment(file_path, n, k_para, p_tilde):
             #Start solving the PCSG problems.
             start_pcsg  = timeit.default_timer()
 
-            optimal_value, k_values = fc.solve_pcsg(n, k_para, p_tilde,
-                                                        my_prob, my_obj)
+            optimal_value, k_values = fc.solve_pcsg(n, k_para,
+                                                    my_prob, my_obj)
 
             stop_pcsg = timeit.default_timer()
             t_pcsg = stop_pcsg - start_pcsg
@@ -55,18 +54,10 @@ def experiment(file_path, n, k_para, p_tilde):
 
     return time_baaat, value_baaat, time_pcsg, value_pcsg, ub_list
 
-def make_record_file(result_file_name):
-
-    wb = excel.Workbook()
-    wb.save(result_file_name)
-    print(wb.sheetnames)
-
-    return result_file_name
-
-def create_result_file(file_list, result_file_name, k_para, p_tilde):
+def create_result_file1(file_list, result_file_name, k_para, p_tilde):
 
     for i in range(len(file_list)):
-        file_path = file_list[i] 
+        file_path = file_list[i]
         n = int(file_path.split('=')[1].split('_')[0])
 
         time_baaat, value_baaat, time_pcsg, value_pcsg, ub_list\
@@ -76,10 +67,10 @@ def create_result_file(file_list, result_file_name, k_para, p_tilde):
         sheet_name = file_path.split('_')[1].split('.csv')[0]
         if sheet_name not in wb.sheetnames:
             wb.create_sheet(sheet_name, 0)
-            
+
         ws = wb.active
         ws = wb[sheet_name]
-
+        ws.cell(column=7, row=1, value=sheet_name)
         ws.cell(column=1, row=1, value='BAAAT-time')
         ws.cell(column=2, row=1, value='BAAAT-value')
         ws.cell(column=3, row=1, value='PCSG-time')
@@ -129,40 +120,3 @@ def create_result_file(file_list, result_file_name, k_para, p_tilde):
         wb.save(result_file_name)
 
     return
-
-
-normal = ['n=6_normal.csv', 'n=8_normal.csv', 'n=10_normal.csv',
-                            'n=12_normal.csv', 'n=14_normal.csv']
-
-modified_normal = [
-                    'n=6_modified_normal.csv', 'n=8_modified_normal.csv',
-                    'n=10_modified_normal.csv', 'n=12_modified_normal.csv',
-                    'n=14_modified_normal.csv'
-                ]
-
-uniform = ['n=6_normal.csv', 'n=8_normal.csv', 'n=10_normal.csv',
-                                'n=12_normal.csv', 'n=14_normal.csv']
-
-modified_uniform = [
-                    'n=6_modified_uniform.csv', 'n=8_modified_uniform.csv',
-                    'n=10_modified_uniform.csv', 'n=12_modified_uniform.csv',
-                    'n=14_modified_uniform.csv'
-                ]
-gamma = ['n=6_Gamma.csv', 'n=8_Gamma.csv', 'n=10_Gamma.csv',
-                                'n=12_Gamma.csv', 'n=14_Gamma.csv']
-
-beta = ['n=6_Beta.csv', 'n=8_Beta.csv', 'n=10_Beta.csv',
-                                        'n=12_Beta.csv', 'n=14_Beta.csv']
-
-
-k_para = 1
-p_tilde = 0.3
-
-result_file_name = make_record_file('BAAAT-experiment.xlsx')
-
-create_result_file(uniform, result_file_name, k_para, p_tilde)
-create_result_file(modified_uniform, result_file_name, k_para, p_tilde)
-create_result_file(normal, result_file_name, k_para, p_tilde)
-create_result_file(modified_normal, result_file_name, k_para, p_tilde)
-create_result_file(gamma, result_file_name, k_para, p_tilde)
-create_result_file(beta, result_file_name, k_para, p_tilde)
